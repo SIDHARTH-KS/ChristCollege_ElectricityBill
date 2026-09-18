@@ -3,23 +3,32 @@ import pandas as pd
 import joblib
 from pathlib import Path
 
-model_path = Path(__file__).parent / "House_Price_Predictor.pkl"
+# Load the trained model
+model_path = Path(__file__).parent / "electricity_bill_model.pkl"
 model = joblib.load(model_path)
 
-st.title("House Price Predictor")
-st.write("Enter the Area , No. of Bedrromms and the age to predict the price")
+# App title
+st.title("Electricity Bill Predictor")
 
-area = st.number_input("Area", min_value=0.0, step=0.5)
-bedrooms = st.number_input("Bedrooms", min_value=0, step=1)
-age = st.number_input("Age", min_value=0, step=1)
+st.write("Enter the AC Units to predict the expected Electric Bill.")
 
+# User input
+ac_units = st.number_input(
+    "AC Units",
+    min_value=0.0,
+    step=5.0
+)
 
+# Prediction
 if st.button("Predict"):
-	input_data = pd.DataFrame({"Area":[area],"Bedrooms":[bedrooms],"Age":[age]})
-	prediction = model.predict(input_data)[0]
-	
-	if prediction:
-		st.success(f"Price: {prediction:.0f}")
-	else:
-		st.error("Error Occured")
 
+    input_data = pd.DataFrame({
+        "AC_Units": [ac_units]
+    })
+
+    prediction = model.predict(input_data)[0]
+
+    if prediction >= 0:
+        st.success(f"Expected Electric Bill: ₹{prediction:.2f}")
+    else:
+        st.error("Error Occurred")
